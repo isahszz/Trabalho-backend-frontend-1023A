@@ -39,6 +39,47 @@ app.get('/clientes', async (request: FastifyRequest, reply: FastifyReply) => {
         }
     }
 })
+app.post('/clientes', async (request: FastifyRequest, reply: FastifyReply) => {
+    const {id,nome,telefone} = request.body as any
+    try {
+        const conn =  await mysql.createConnection({
+            host: "localhost",
+            user: 'root',
+            password: "",
+            database: 'salao',
+            port: 3306
+        })
+        const resultado =  await conn.query("INSERT INTO clientes (id,nome,telefone) VALUES (?,?,?,?)",[id,nome,telefone])
+        const [dados, camposTabela] = resultado
+        console.log(dados)
+        reply.status(200).send({id,nome,telefone})
+    }
+    catch (erro: any) {
+        switch (erro.code) {
+            case "ECONNREFUSED":
+                console.log("ERRO: LIGUE O LARAGÃO!!! CABEÇA!");
+                reply.status(400).send({ mensagem: "ERRO: LIGUE O LARAGÃO!!! CABEÇA!" });
+                break;
+            case "ER_BAD_DB_ERROR":
+                console.log("ERRO: CONFIRA O NOME DO BANCO DE DADOS OU CRIE UM NOVO BANCO COM O NOME QUE VOCÊ COLOCOU LÁ NA CONEXÃO");
+                reply.status(400).send({ mensagem: "ERRO: CONFIRA O NOME DO BANCO DE DADOS OU CRIE UM NOVO BANCO COM O NOME QUE VOCÊ COLOCOU LÁ NA CONEXÃO" });
+                break;
+            case "ER_ACCESS_DENIED_ERROR":
+                console.log("ERRO: CONFIRA O USUÁRIO E SENHA NA CONEXÃO");
+                reply.status(400).send({ mensagem: "ERRO: CONFIRA O USUÁRIO E SENHA NA CONEXÃO" });
+                break;
+            case "ER_DUP_ENTRY":
+                console.log("ERRO: VOCÊ DUPLICOU A CHAVE PRIMÁRIA");
+                reply.status(400).send({ mensagem: "ERRO: VOCÊ DUPLICOU A CHAVE PRIMÁRIA" });
+                break;
+            default:
+                console.log(erro);
+                reply.status(400).send({ mensagem: "ERRO DESCONHECIDO OLHE O TERMINAL DO BACKEND" });
+                break;
+        }
+    
+    }
+})
 app.get('/procedimento', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const conn =  await mysql.createConnection({
@@ -72,6 +113,47 @@ app.get('/procedimento', async (request: FastifyRequest, reply: FastifyReply) =>
             console.log(erro)
             reply.status(400).send({mensagem:"ERRO: NÃO IDENTIFICADO"})
         }
+    }
+})
+app.post('/procedimento', async (request: FastifyRequest, reply: FastifyReply) => {
+    const {id,nome,preco} = request.body as any
+    try {
+        const conn =  await mysql.createConnection({
+            host: "localhost",
+            user: 'root',
+            password: "",
+            database: 'salao',
+            port: 3306
+        })
+        const resultado =  await conn.query("INSERT INTO procedimento (id,nome,preco) VALUES (?,?,?,?)",[id,nome,preco])
+        const [dados, camposTabela] = resultado
+        console.log(dados)
+        reply.status(200).send({id,nome,preco})
+    }
+    catch (erro: any) {
+        switch (erro.code) {
+            case "ECONNREFUSED":
+                console.log("ERRO: LIGUE O LARAGÃO!!! CABEÇA!");
+                reply.status(400).send({ mensagem: "ERRO: LIGUE O LARAGÃO!!! CABEÇA!" });
+                break;
+            case "ER_BAD_DB_ERROR":
+                console.log("ERRO: CONFIRA O NOME DO BANCO DE DADOS OU CRIE UM NOVO BANCO COM O NOME QUE VOCÊ COLOCOU LÁ NA CONEXÃO");
+                reply.status(400).send({ mensagem: "ERRO: CONFIRA O NOME DO BANCO DE DADOS OU CRIE UM NOVO BANCO COM O NOME QUE VOCÊ COLOCOU LÁ NA CONEXÃO" });
+                break;
+            case "ER_ACCESS_DENIED_ERROR":
+                console.log("ERRO: CONFIRA O USUÁRIO E SENHA NA CONEXÃO");
+                reply.status(400).send({ mensagem: "ERRO: CONFIRA O USUÁRIO E SENHA NA CONEXÃO" });
+                break;
+            case "ER_DUP_ENTRY":
+                console.log("ERRO: VOCÊ DUPLICOU A CHAVE PRIMÁRIA");
+                reply.status(400).send({ mensagem: "ERRO: VOCÊ DUPLICOU A CHAVE PRIMÁRIA" });
+                break;
+            default:
+                console.log(erro);
+                reply.status(400).send({ mensagem: "ERRO DESCONHECIDO OLHE O TERMINAL DO BACKEND" });
+                break;
+        }
+    
     }
 })
 app.get('/agendamento', async (request: FastifyRequest, reply: FastifyReply) => {
