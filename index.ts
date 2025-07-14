@@ -191,6 +191,47 @@ app.get('/agendamento', async (request: FastifyRequest, reply: FastifyReply) => 
         }
     }
 })
+app.post('/agendamento', async (request: FastifyRequest, reply: FastifyReply) => {
+    const {id,clientes_idclientes,profissional_id,data_hora} = request.body as any
+    try {
+        const conn =  await mysql.createConnection({
+            host: "localhost",
+            user: 'root',
+            password: "",
+            database: 'salao',
+            port: 3306
+        })
+        const resultado =  await conn.query("INSERT INTO agendamento (id,clientes_idclientes,profissonal_id,data_hora) VALUES (?,?,?,?)",[id,clientes_idclientes,profissional_id,data_hora])
+        const [dados, camposTabela] = resultado
+        console.log(dados)
+        reply.status(200).send({id,clientes_idclientes,profissional_id,data_hora})
+    }
+    catch (erro: any) {
+        switch (erro.code) {
+            case "ECONNREFUSED":
+                console.log("ERRO: LIGUE O LARAGÃO!!! CABEÇA!");
+                reply.status(400).send({ mensagem: "ERRO: LIGUE O LARAGÃO!!! CABEÇA!" });
+                break;
+            case "ER_BAD_DB_ERROR":
+                console.log("ERRO: CONFIRA O NOME DO BANCO DE DADOS OU CRIE UM NOVO BANCO COM O NOME QUE VOCÊ COLOCOU LÁ NA CONEXÃO");
+                reply.status(400).send({ mensagem: "ERRO: CONFIRA O NOME DO BANCO DE DADOS OU CRIE UM NOVO BANCO COM O NOME QUE VOCÊ COLOCOU LÁ NA CONEXÃO" });
+                break;
+            case "ER_ACCESS_DENIED_ERROR":
+                console.log("ERRO: CONFIRA O USUÁRIO E SENHA NA CONEXÃO");
+                reply.status(400).send({ mensagem: "ERRO: CONFIRA O USUÁRIO E SENHA NA CONEXÃO" });
+                break;
+            case "ER_DUP_ENTRY":
+                console.log("ERRO: VOCÊ DUPLICOU A CHAVE PRIMÁRIA");
+                reply.status(400).send({ mensagem: "ERRO: VOCÊ DUPLICOU A CHAVE PRIMÁRIA" });
+                break;
+            default:
+                console.log(erro);
+                reply.status(400).send({ mensagem: "ERRO DESCONHECIDO OLHE O TERMINAL DO BACKEND" });
+                break;
+        }
+    
+    }
+})
 app.listen({ port: 8000 }, (err, address) => {
     if (err) {
         console.error(err)
